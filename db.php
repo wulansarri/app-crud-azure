@@ -7,11 +7,13 @@ $port = getenv('DB_PORT') ?: 3306;
 
 $conn = mysqli_init();
 
-// Mengaktifkan SSL untuk Azure MySQL
+// Atur timeout singkat (5 detik) agar tidak sampai 504 Gateway Timeout
+mysqli_options($conn, MYSQLI_OPT_CONNECT_TIMEOUT, 5);
+
+// Nonaktifkan validasi cert ketat untuk mempercepat SSL handshaking
 mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, NULL);
 
-// Melakukan koneksi dengan timeout 10 detik
-if (!mysqli_real_connect($conn, $host, $user, $pass, $dbname, $port, NULL, MYSQLI_CLIENT_SSL)) {
-    die("Koneksi Database Gagal: " . mysqli_connect_error());
+if (!@mysqli_real_connect($conn, $host, $user, $pass, $dbname, $port, NULL, MYSQLI_CLIENT_SSL)) {
+    die("<h3 style='color:red;'>Koneksi Database Gagal:</h3> " . mysqli_connect_error());
 }
 ?>
